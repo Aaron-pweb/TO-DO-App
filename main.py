@@ -1,12 +1,9 @@
-from flask import Flask, render_template, abort, jsonify, request, url_for, redirect
+from flask import Flask, render_template, url_for, redirect
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, Relationship
 from sqlalchemy import Integer, String, Boolean, ForeignKey
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError, OperationalError
 from flask.typing import ResponseReturnValue
-from flask_wtf import FlaskForm 
-from wtforms import StringField, BooleanField, SubmitField
-from wtforms.validators import DataRequired, URL, Optional
 from typing import List
 #app init
 app = Flask(__name__)
@@ -25,8 +22,9 @@ class User(db.Model):
     username: Mapped[str] = mapped_column(type_=String, unique=True, nullable=False)
     email: Mapped[str] = mapped_column(type_=String, unique=True, nullable=False)
     password: Mapped[str] = mapped_column(type_=String, nullable=False)
-    # relationship with the Tasks table
+    # relationship
     task: Mapped[List["Task"]] = Relationship(back_populates="author")
+
 class Task(db.Model):
     __tablename__ = "task"
     id: Mapped[str] = mapped_column(primary_key=True, nullable=False)
@@ -41,8 +39,10 @@ class Task(db.Model):
 with app.app_context():
     db.create_all()
 
+
 @app.route('/')
 def home()->ResponseReturnValue:
+
     return render_template('index.html')
 
 @app.route('/login')
