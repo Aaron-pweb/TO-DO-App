@@ -5,6 +5,7 @@ from sqlalchemy import Integer, String, Boolean, ForeignKey
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError, OperationalError
 from flask.typing import ResponseReturnValue
 from typing import List
+from  import Registration, FormLoginForm, TaskForm
 #app init
 app = Flask(__name__)
 #db 
