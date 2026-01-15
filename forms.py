@@ -3,7 +3,6 @@ from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextA
 from wtforms.validators import DataRequired, Email, Length, EqualTo
 
 class RegistrationForm(FlaskForm):
-    username = StringField('Username', validators=[DataRequired(), Length(min=2, max=20)])
     email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired(), Length(min=6)])
     confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password')])
@@ -17,5 +16,6 @@ class LoginForm(FlaskForm):
 
 class TaskForm(FlaskForm):
     title = StringField('Task Title', validators=[DataRequired(), Length(max=200)])
-    content = TextAreaField('Description') 
+    type = StringField('Type', validators=[DataRequired(), Length(max=10)])
+    discription = TextAreaField('Description', validators=[DataRequired()]) 
     submit = SubmitField('Add Task')
