@@ -5,15 +5,14 @@ from sqlalchemy import Integer, String, Boolean, ForeignKey
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError, OperationalError
 from flask.typing import ResponseReturnValue
 from typing import List
-from  forms import RegistrationForm, LoginForm, TaskForm
-from flask_login import LoginManager
+from forms import RegistrationForm, LoginForm, TaskForm
+from flask_login import LoginManager, UserMixin, login_required, current_user, login_user, logout_user
+
 #app init
 app = Flask(__name__)
 #db 
 class Base(DeclarativeBase):
     pass
-#setting secrete key 
-app.secret_key = "e$r9dn^*((D)n><4@HBN)"
 
 # setup login
 login_manager = LoginManager()
@@ -21,10 +20,11 @@ login_manager.init_app(app=app)
 
 db = SQLAlchemy(model_class=Base)
 
-# configure the SQLite database
+# configure  APP
+app.secret_key = "e$r9dn^*((D)n><4@HBN)"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"
 #db Model
-class User(db.Model):
+class User(UserMixin, db.Model):
     __tablename__ = "user"
     id: Mapped[int] = mapped_column(primary_key=True)
     username: Mapped[str] = mapped_column(type_=String, unique=True, nullable=False)
@@ -47,6 +47,10 @@ class Task(db.Model):
 with app.app_context():
     db.create_all()
 
+# Load user for Flask-Login
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(user_id)
 
 @app.route('/')
 def home()->ResponseReturnValue:
@@ -59,7 +63,7 @@ def login()->ResponseReturnValue:
         pass
     return render_template('login.html')  
 
-@app.route("/sign-up")
+@app.route("/sign-up", methods=["POST", "GET"])
 def signup() -> ResponseReturnValue:
     form = RegistrationForm()
     if form.validate_on_submit():
