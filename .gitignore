@@ -3,3 +3,4 @@
 .gitingnore
 __pycache__
 instance
+instance/project.db

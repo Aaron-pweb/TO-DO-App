@@ -96,7 +96,7 @@ def signup() -> ResponseReturnValue: #Registrations
             flash("user already exist")
             return redirect(url_for("login"))
         else:
-            hashed_password = generate_password_hash(password=str(form.password.data), salt_length=8, method="scrypt:")
+            hashed_password = generate_password_hash(str(form.password.data))
             user = User(name=form.name.data, # type: ignore
                         email=form.email.data,  # type: ignore
                         password=hashed_password)  # type: ignore
