@@ -1,3 +1,5 @@
 .venv
 .vscode
 .gitingnore
+__pycache__
+instance
