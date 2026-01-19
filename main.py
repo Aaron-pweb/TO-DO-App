@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, redirect, session, request, flash
+from flask import Flask, render_template, url_for, redirect, session, request, flash, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, Relationship
 from sqlalchemy import String, Boolean, ForeignKey, select, Date
@@ -182,9 +182,13 @@ def delete_task(task_id):
     try:
         db.session.delete(task)
         db.session.commit()
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+             return jsonify({'status': 'success', 'message': 'Task deleted successfully!'})
         flash("Task deleted successfully!")
     except Exception as e:
         db.session.rollback()
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+             return jsonify({'status': 'error', 'message': str(e)}), 500
         flash(f"Error deleting task: {str(e)}")
         logging.error(f"Error deleting task: {e}")
     
@@ -204,9 +208,13 @@ def toggle_task(task_id):
         task.checked = not task.checked
         db.session.commit()
         status = "completed" if task.checked else "uncompleted"
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+             return jsonify({'status': 'success', 'message': f"Task marked as {status}!", 'new_state': task.checked})
         flash(f"Task marked as {status}!")
     except Exception as e:
         db.session.rollback()
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+             return jsonify({'status': 'error', 'message': str(e)}), 500
         flash(f"Error toggling task: {str(e)}")
         logging.error(f"Error toggling task: {e}")
     
